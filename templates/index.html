@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maze Solver</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        canvas {
+            border: 2px solid black;
+            margin-top: 20px;
+        }
+        .controls {
+            margin-top: 10px;
+        }
+        button {
+            padding: 10px;
+            font-size: 16px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Maze Solver</h1>
+    <canvas id="mazeCanvas"></canvas>
+    <div class="controls">
+        <button id="resetMaze">Reset</button>
+        <button id="solveMaze">Solve</button>
+    </div>
+
+    <script>
+        const rows = 21, cols = 21;
+        const canvas = document.getElementById("mazeCanvas");
+        const ctx = canvas.getContext("2d");
+        const cellSize = 20;
+        canvas.width = cols * cellSize;
+        canvas.height = rows * cellSize;
+        let maze = [];
+
+        function fetchMaze() {
+            fetch("/get_maze")
+                .then(response => response.json())
+                .then(data => {
+                    maze = data.maze;
+                    drawMaze();
+                });
+        }
+
+        function drawMaze() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < rows; i++) {
+                for (let j = 0; j < cols; j++) {
+                    if (maze[i][j] === "#") {
+                        ctx.fillStyle = "black";
+                    } else if (maze[i][j] === "R") {
+                        ctx.fillStyle = "red";
+                    } else {
+                        ctx.fillStyle = "white";
+                    }
+                    ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
+                    ctx.strokeRect(j * cellSize, i * cellSize, cellSize, cellSize);
+                }
+            }
+        }
+
+        function animateSolution(path) {
+            let index = 0;
+            function step() {
+                if (index < path.length) {
+                    let [i, j] = path[index];
+                    maze[i][j] = "R";
+                    drawMaze();
+                    index++;
+                    setTimeout(step, 50);
+                }
+            }
+            step();
+        }
+
+        document.getElementById("solveMaze").addEventListener("click", function() {
+            fetch("/solve_maze", { method: "POST" })
+                .then(response => response.json())
+                .then(data => {
+                    animateSolution(data.correct_path);
+                });
+        });
+
+        document.getElementById("resetMaze").addEventListener("click", function() {
+            fetch("/reset_maze", { method: "POST" })
+                .then(response => response.json())
+                .then(data => {
+                    maze = data.maze;
+                    drawMaze();
+                });
+        });
+
+        fetchMaze();
+    </script>
+</body>
+</html>
