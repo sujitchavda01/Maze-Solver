@@ -42,4 +42,4 @@ The project visualizes the process of solving a maze where:
 
 - Below is a preview of the maze layout or solver interface:
 
-![Maze]([https://github.com/sujitchavda01/JAVA-FRAME-CRUD-OPERATION/assets/144345082/12e62b01-82c5-40d5-851e-a69ae52b2c10](https://github.com/sujitchavda01/Maze-Solver/blob/main/Example.png))
+![Maze](https://github.com/sujitchavda01/Maze-Solver/blob/0c22dd782e41cd6d14c49f35f83a8cadb692a53e/Example.png)
